@@ -1,20 +1,26 @@
 "use client";
 
-import { useCallback } from "react";
 import Image from "next/image";
+import { useCallback } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { AiFillGithub } from "react-icons/ai";
 import Button from "../ui/Button";
 import useRegisterModal from "@/hooks/useRegisterModal";
+import useLoginModal from "@/hooks/useLoginModal";
 import RegisterModal from "../modals/register-modal";
 import LoginModal from "../modals/login-modal";
 
 export default function Auth() {
   const registerModal = useRegisterModal();
+  const loginModal = useLoginModal();
 
   const onOpenRegisterModal = useCallback(() => {
     registerModal.onOpen();
   }, [registerModal]);
+
+  const onOpenLoginModal = useCallback(() => {
+    loginModal.onOpen();
+  }, [loginModal]);
 
   return (
     <>
@@ -82,6 +88,7 @@ export default function Auth() {
               label="Sign in"
               fullWidth
               outline
+              onClick={onOpenLoginModal}
             />
           </div>
         </div>

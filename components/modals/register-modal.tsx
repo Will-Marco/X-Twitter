@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,12 +16,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import useLoginModal from "@/hooks/useLoginModal";
 
 export default function RegisterModal() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState({ name: "", email: "" });
 
   const registerModal = useRegisterModal();
+  const loginModal = useLoginModal();
+
+  const onToggle = useCallback(() => {
+    registerModal.onClose();
+    loginModal.onOpen();
+  }, [loginModal, registerModal]);
 
   const body =
     step === 1 ? (
@@ -34,7 +41,10 @@ export default function RegisterModal() {
     <div className="mb-4 text-neutral-400 text-center ">
       <p>
         Already have an account?{" "}
-        <span className="text-white cursor-pointer hover:underline">
+        <span
+          className="text-white cursor-pointer hover:underline"
+          onClick={onToggle}
+        >
           Sign in
         </span>
       </p>
@@ -78,6 +88,7 @@ function RegisterStep1({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="px-3 space-y-4">
+        <h3 className="text-3xl font-semibold text-white">Create an account</h3>
         <FormField
           control={form.control}
           name="name"
