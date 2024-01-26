@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import Modal from "../ui/modal";
 import useLoginModal from "@/hooks/useLoginModal";
 import * as z from "zod";
@@ -15,8 +15,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { loginSchema } from "@/lib/validation";
 import useRegisterModal from "@/hooks/useRegisterModal";
+import axios from "axios";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export default function LoginModal() {
+  const [error, setError] = useState("");
+
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
 
@@ -33,8 +38,19 @@ export default function LoginModal() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof loginSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
+    try {
+      const { data } = await axios.post("/api/auth/login", values);
+      if (data.success) {
+        loginModal.onClose()
+      }
+    } catch (error: any) {
+      if (error.response.data.error) {
+        setError(error.response.data.error);
+      } else {
+        setError("Something went wrong. Please try again later.");
+      }
+    }
   }
 
   const { isSubmitting } = form.formState;
@@ -42,7 +58,14 @@ export default function LoginModal() {
   const bodyContent = (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="px-3 space-y-4">
-        <h3 className="text-3xl font-semibold text-white">Sign in</h3>
+        <h3 className="text-3xl font-semibold text-white">Sign In</h3>
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         <FormField
           control={form.control}
           name="email"
@@ -68,7 +91,7 @@ export default function LoginModal() {
           )}
         />
         <Button
-          label="Register"
+          label="Sign In"
           type="submit"
           secondary
           fullWidth
