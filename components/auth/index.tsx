@@ -9,6 +9,7 @@ import useRegisterModal from "@/hooks/useRegisterModal";
 import useLoginModal from "@/hooks/useLoginModal";
 import RegisterModal from "../modals/register-modal";
 import LoginModal from "../modals/login-modal";
+import { signIn } from "next-auth/react";
 
 export default function Auth() {
   const registerModal = useRegisterModal();
@@ -51,6 +52,7 @@ export default function Auth() {
                 }
                 fullWidth
                 secondary
+                onClick={() => signIn("google")}
               />
               <Button
                 label={
@@ -61,6 +63,7 @@ export default function Auth() {
                 }
                 fullWidth
                 secondary
+                onClick={() => signIn("github")}
               />
               <div className="w-full flex justify-center items-center">
                 <hr className="h-[2px] w-full bg-gray-500" />
