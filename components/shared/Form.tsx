@@ -24,7 +24,7 @@ export default function Form({ placeholder, user, setPosts }: PropsType) {
         body,
         userId: user._id,
       });
-      const newPost = { ...data, user };
+      const newPost = { ...data, user, hasLikes: false, likes: 0, comment: 0 };
       setPosts((prev) => [newPost, ...prev]);
       setBody("");
       toast({
