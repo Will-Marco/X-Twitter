@@ -11,26 +11,54 @@ interface PropsType {
   placeholder: string;
   user: IUser;
   setPosts: Dispatch<SetStateAction<IPost[]>>;
+  postId?: string;
+  isComment?: boolean;
 }
 
-export default function Form({ placeholder, user, setPosts }: PropsType) {
+export default function Form({
+  placeholder,
+  user,
+  setPosts,
+  postId,
+  isComment,
+}: PropsType) {
   const [body, setBody] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async () => {
     try {
       setIsLoading(true);
-      const { data } = await axios.post("/api/posts", {
-        body,
-        userId: user._id,
-      });
-      const newPost = { ...data, user, hasLikes: false, likes: 0, comment: 0 };
-      setPosts((prev) => [newPost, ...prev]);
+      if (isComment) {
+        const { data } = await axios.post("/api/comments", {
+          body,
+          userId: user._id,
+          postId,
+        });
+        const newComment = { ...data, user, likes: 0, hasLiked: false };
+        setPosts((prev) => [newComment, ...prev]);
+        toast({
+          title: "Success",
+          description: "Comment created successfully",
+        });
+      } else {
+        const { data } = await axios.post("/api/posts", {
+          body,
+          userId: user._id,
+        });
+        const newPost = {
+          ...data,
+          user,
+          hasLikes: false,
+          likes: 0,
+          comment: 0,
+        };
+        setPosts((prev) => [newPost, ...prev]);
+        toast({
+          title: "Success",
+          description: "Post created successfully",
+        });
+      }
       setBody("");
-      toast({
-        title: "Success",
-        description: "Post created successfully",
-      });
     } catch (error) {
       toast({
         title: "Error",
@@ -61,7 +89,7 @@ export default function Form({ placeholder, user, setPosts }: PropsType) {
           <hr className="w-full h-[1px] opacity-0 peer-focus:opacity-100 border-neutral-800 transition" />
           <div className="mt-4 flex flex-row justify-end">
             <Button
-              label="Post"
+              label={isComment ? "Reply" : "Post"}
               classNames="mx-8"
               disabled={isLoading || !body}
               onClick={onSubmit}

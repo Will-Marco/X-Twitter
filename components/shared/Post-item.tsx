@@ -4,10 +4,10 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatDistanceToNowStrict } from "date-fns";
 import { sliceText } from "@/lib/utils";
-import { AiFillDelete, AiOutlineHeart, AiOutlineMessage } from "react-icons/ai";
-import { FaCommentAlt, FaHeart, FaTrash, FaTrashAlt } from "react-icons/fa";
+import { FaCommentAlt, FaHeart, FaTrash } from "react-icons/fa";
 import { toast } from "../ui/use-toast";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface PropsType {
   user: IUser;
@@ -17,9 +17,12 @@ interface PropsType {
 
 export default function PostItem({ user, post, setPosts }: PropsType) {
   const [isLoading, setIsLoading] = useState(false);
-  const [hasLiked, setHasLiked] = useState<boolean>(post.hasLiked as boolean);
+  const [hasLiked, setHasLiked] = useState<boolean>(post.hasLiked as boolean); 
 
-  const onDelete = async () => {
+  const router = useRouter();
+
+  const onDelete = async (e: any) => {
+    e.stopPropagation();
     try {
       setIsLoading(true);
       await axios.delete("/api/posts", {
@@ -37,7 +40,8 @@ export default function PostItem({ user, post, setPosts }: PropsType) {
     }
   };
 
-  const onLike = async () => {
+  const onLike = async (e: any) => {
+    e.stopPropagation();
     try {
       setIsLoading(true);
       if (hasLiked) {
@@ -78,6 +82,10 @@ export default function PostItem({ user, post, setPosts }: PropsType) {
     }
   };
 
+  const goToPost = () => {
+    router.push(`/posts/${post._id}`);
+  };
+
   return (
     <div className="p-5 relative border-b-[1px] border-neutral-800 cursor-pointer hover:bg-neutral-900 transition">
       {isLoading && (
@@ -87,7 +95,10 @@ export default function PostItem({ user, post, setPosts }: PropsType) {
           </div>
         </div>
       )}
-      <div className="flex flex-row items-center gap-3">
+      <div
+        className="flex flex-row items-center gap-3 cursor-pointer"
+        onClick={goToPost}
+      >
         <Avatar>
           <AvatarImage src={post.user.profileImage} />
           <AvatarFallback>{post.user.name[0]}</AvatarFallback>
