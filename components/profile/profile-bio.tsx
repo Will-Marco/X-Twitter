@@ -10,6 +10,10 @@ import { BiCalendar } from "react-icons/bi";
 import axios from "axios";
 import EditModal from "../modals/edit-modal";
 import useEditModal from "@/hooks/useEditModal";
+import { Loader2 } from "lucide-react";
+import FollowUser from "../shared/Follow-user";
+import { cn } from "@/lib/utils";
+import Modal from "../ui/modal";
 
 interface PropsType {
   user: IUser;
@@ -18,6 +22,12 @@ interface PropsType {
 
 export default function ProfileBio({ user, userId }: PropsType) {
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [following, setFollowing] = useState<IUser[]>([]);
+  const [followers, setFollowers] = useState<IUser[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [state, setState] = useState<"following" | "followers">("following");
+
   const router = useRouter();
   const editModal = useEditModal();
 
@@ -48,6 +58,48 @@ export default function ProfileBio({ user, userId }: PropsType) {
       console.log(error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const getFollowUser = async (userId: string, type: string) => {
+    try {
+      setIsFetching(true);
+      const { data } = await axios.get(
+        `/api/follows?state=${type}&userId=${userId}`
+      );
+      return data;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  const openFollowModal = async () => {
+    try {
+      setOpen(true);
+      const data = await getFollowUser(user._id, "following");
+      setFollowing(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onFollowing = async () => {
+    setState("following");
+
+    if (following.length === 0) {
+      const data = await getFollowUser(user._id, "following");
+      setFollowing(data);
+    }
+  };
+
+  const onFollowers = async () => {
+    setState("followers");
+
+    if (followers.length === 0) {
+      const data = await getFollowUser(user._id, "followers");
+      setFollowers(data);
     }
   };
 
@@ -102,12 +154,18 @@ export default function ProfileBio({ user, userId }: PropsType) {
             </div>
 
             <div className="mt-6 flex flex-row items-center gap-6">
-              <div className="flex flex-row items-center gap-1 hover:underline cursor-pointer">
+              <div
+                className="flex flex-row items-center gap-1 hover:underline cursor-pointer"
+                onClick={openFollowModal}
+              >
                 <p className="text-white">{user.following}</p>
                 <p className="text-neutral-500">Following</p>
               </div>
 
-              <div className="flex flex-row items-center gap-1 hover:underline cursor-pointer">
+              <div
+                className="flex flex-row items-center gap-1 hover:underline cursor-pointer"
+                onClick={openFollowModal}
+              >
                 <p className="text-white">{user.followers}</p>
                 <p className="text-neutral-500">Followers</p>
               </div>
@@ -115,6 +173,73 @@ export default function ProfileBio({ user, userId }: PropsType) {
           </div>
         </div>
       </div>
+      {/* FOLLOWING AND FOLLOWERS MODAL */}
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        body={
+          <>
+            <div className="w-full py-3 px-4 flex flex-row">
+              <div
+                className={cn(
+                  "w-[50%] h-full flex justify-center items-center font-semibold cursor-pointer ",
+                  state === "following" &&
+                    "border-b-[2px] border-sky-500 text-sky-500"
+                )}
+                onClick={onFollowing}
+              >
+                Following
+              </div>
+              <div
+                className={cn(
+                  "w-[50%] h-full flex justify-center items-center font-semibold cursor-pointer",
+                  state === "followers" &&
+                    "border-b-[2px] border-sky-500 text-sky-500"
+                )}
+                onClick={onFollowers}
+              >
+                Followers
+              </div>
+            </div>
+
+            {isFetching ? (
+              <div className="h-24 flex justify-center items-center">
+                <Loader2 className="animate-spin text-sky-500" />
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-4">
+                {state === "following" ? (
+                  following.length === 0 ? (
+                    <div className="p-6 text-center text-xl text-neutral-600">
+                      No following
+                    </div>
+                  ) : (
+                    following.map((user) => (
+                      <FollowUser
+                        key={user._id}
+                        user={user}
+                        setFollowing={setFollowing}
+                      />
+                    ))
+                  )
+                ) : followers.length === 0 ? (
+                  <div className="p-6 text-center text-xl text-neutral-600">
+                    No followers
+                  </div>
+                ) : (
+                  followers.map((user) => (
+                    <FollowUser
+                      key={user._id}
+                      user={user}
+                      setFollowing={setFollowing}
+                    />
+                  ))
+                )}
+              </div>
+            )}
+          </>
+        }
+      />
     </>
   );
 }
