@@ -17,7 +17,7 @@ export default function User({ user }: { user: IUser }) {
           </p>
           <p className="text-sm text-neutral-400 line-clamp-1">
             {user.username
-              ? `${sliceText(user.username, 16)}`
+              ? `@${sliceText(user.username, 16)}`
               : sliceText(user.email, 16)}
           </p>
         </div>

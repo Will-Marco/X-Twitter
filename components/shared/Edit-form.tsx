@@ -84,14 +84,18 @@ export default function EditForm({ user }: PropsType) {
         <FormField
           control={form.control}
           name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Username" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const username = field.value.replace(/\s+/g, "_").toLocaleLowerCase();
+            field.value = username;
+            return (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Username" {...field} value={username} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         <FormField
