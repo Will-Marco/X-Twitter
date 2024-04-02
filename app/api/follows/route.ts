@@ -1,3 +1,4 @@
+import Notification from "@/database/notification.model";
 import User from "@/database/user.model";
 import { connectToDatabase } from "@/lib/mogoose";
 import { NextResponse } from "next/server";
@@ -36,6 +37,16 @@ export async function PUT(req: Request) {
     await User.findByIdAndUpdate(currentUserId, {
       $push: { following: userId },
     });
+
+    await Notification.create({
+      user: userId,
+      body: "Someone followed you!",
+    });
+
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { hasNewNotifications: true } }
+    );
 
     return NextResponse.json({ message: "Followed" });
   } catch (error) {
