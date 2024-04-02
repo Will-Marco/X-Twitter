@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Auth from "@/components/auth";
 import { Toaster } from "@/components/ui/toaster";
 import { authOptions } from "@/lib/authOptions";
@@ -7,12 +6,6 @@ import { ReactNode } from "react";
 import NextTopLoader from "nextjs-toploader";
 import Sidebar from "@/components/sidebar/Sidebar";
 import FollowBar from "@/components/shared/Follow-bar";
-
-export const metadata: Metadata = {
-  title: "Twitter X",
-  description: "Twitter X is a Twitter clone built with Next.js and MongoDB.",
-  icons: { icon: "/images/x.svg" },
-};
 
 interface PropsType {
   children: ReactNode;
