@@ -1,15 +1,19 @@
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { IUser } from "@/types";
-import { MoreHorizontal } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { Loader2, MoreHorizontal } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 
-interface PropsType {
-  user: IUser;
-}
 
-export default function SidebarAccount({ user }: PropsType) {
+export default function SidebarAccount() {
+  const { data, status }: any = useSession();
+
+  if (status == "loading")
+    return (
+      <div className="flex items-center justify-center">
+        <Loader2 className="animate-spin text-sky-500" />
+      </div>
+    );
   return (
     <>
       {/* MOBIE SIDEBAR ACCOUNT */}
@@ -28,13 +32,13 @@ export default function SidebarAccount({ user }: PropsType) {
           <div className="flex justify-between items-center gap-2">
             <div className="flex gap-2 items-center">
               <Avatar>
-                <AvatarImage src={user.profileImage} />
-                <AvatarFallback>{user.name[0]}</AvatarFallback>
+                <AvatarImage src={data?.currentUser?.profileImage} />
+                <AvatarFallback>{data?.currentUser?.name[0]}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col items-start text-white">
-                <p>{user.name}</p>
-                {user.username ? (
-                  <p className="opacity-40">@{user.username}</p>
+                <p>{data?.currentUser?.name}</p>
+                {data?.currentUser?.username ? (
+                  <p className="opacity-40">@{data?.currentUser?.username}</p>
                 ) : (
                   <p className="opacity-40">Manage account</p>
                 )}
@@ -48,7 +52,10 @@ export default function SidebarAccount({ user }: PropsType) {
             className="p-4 font-bold text-white cursor-pointer hover:bg-slate-300 hover:bg-opacity-10 transition"
             onClick={() => signOut()}
           >
-            Log out {user.username ? `@${user.username}` : user.name}
+            Log out{" "}
+            {data?.currentUser?.username
+              ? `@${data?.currentUser?.username}`
+              : data?.currentUser?.name}
           </div>
         </PopoverContent>
       </Popover>
