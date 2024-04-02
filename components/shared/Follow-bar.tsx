@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Loader2 } from "lucide-react";
 import Button from "../ui/Button";
@@ -12,8 +12,8 @@ export default function FollowBar() {
 
   return (
     <div className="py-4 hidden lg:block w-[266px]">
-      <div className="p-4 bg-neutral-800 rounded-xl">
-        <div className="flex justify-between items-center">
+      <div className="bg-neutral-800 rounded-xl">
+        <div className="px-4 pt-4 flex justify-between items-center">
           <h2 className="text-xl text-white font-semibold">Who to follow</h2>
           <Button
             secondary

@@ -75,15 +75,20 @@ export default function FollowUser({ user, setFollowing }: PropsType) {
     }
   };
 
+  const goToProfile = (evt: any) => {
+    evt.stopPropagation();
+    router.push(`/profile/${user._id}`);
+  };
+
   return (
     <div className="py-2 px-3 flex items-center justify-between gap-3 rounded-md cursor-pointer hover:bg-slate-300 hover:bg-opacity-10 transition">
       <div className="flex gap-2 cursor-pointer">
-        <Avatar>
+        <Avatar onClick={goToProfile}>
           <AvatarImage src={profile.profileImage} />
           <AvatarFallback>{profile.name[0]}</AvatarFallback>
         </Avatar>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col" onClick={goToProfile}>
           <p className="text-sm line-clamp-1 font-semibold text-white">
             {profile.name}
           </p>

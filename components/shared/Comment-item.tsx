@@ -8,6 +8,7 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { FaHeart, FaTrash } from "react-icons/fa";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface PropsType {
   comment: IPost;
@@ -23,6 +24,8 @@ export default function CommentItem({
   comments,
 }: PropsType) {
   const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   const onLike = async (e: any) => {
     e.stopPropagation();
@@ -77,6 +80,11 @@ export default function CommentItem({
     }
   };
 
+  const goToProfile = (evt: any) => {
+    evt.stopPropagation();
+    router.push(`/profile/${user._id}`);
+  };
+
   return (
     <div className="p-5 relative border-b-[1px] border-neutral-800 hover:bg-neutral-900 transition">
       {isLoading && (
@@ -87,12 +95,15 @@ export default function CommentItem({
         </div>
       )}
       <div className="flex flex-row items-center gap-3">
-        <Avatar>
+        <Avatar onClick={goToProfile}>
           <AvatarImage src={comment?.user.profileImage} />
           <AvatarFallback>{comment?.user.name[0]}</AvatarFallback>
         </Avatar>
         <div>
-          <div className="flex flex-row items-center gap-2">
+          <div
+            className="flex flex-row items-center gap-2"
+            onClick={goToProfile}
+          >
             <p className="text-white font-semibold cursor-pointer hover:underline">
               {comment?.user.name}
             </p>
