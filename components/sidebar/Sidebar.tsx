@@ -1,17 +1,15 @@
 "use client";
 
 import { Bell, Home, User } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import SidebarItem from "./Sidebar-item";
 import SidebarPostButton from "./Sidebar-post-button";
 import SidebarAccount from "./Sidebar-account";
 import { IUser } from "@/types";
+import { MdOutlineExplore } from "react-icons/md";
 
 export default function Sidebar({ user }: { user: IUser }) {
-  const { data: session, status }: any = useSession();
-
   const sidebarItems = [
     {
       label: "Home",
@@ -28,6 +26,11 @@ export default function Sidebar({ user }: { user: IUser }) {
       label: "Profile",
       path: `/profile/${user._id}`,
       icon: User,
+    },
+    {
+      label: "Explore",
+      path: "/explore",
+      icon: MdOutlineExplore,
     },
   ];
 
@@ -47,7 +50,7 @@ export default function Sidebar({ user }: { user: IUser }) {
         <SidebarPostButton />
       </div>
 
-      <SidebarAccount user={user} />
+      <SidebarAccount />
     </section>
   );
 }

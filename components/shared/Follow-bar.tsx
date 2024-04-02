@@ -15,11 +15,13 @@ export default function FollowBar() {
       <div className="bg-neutral-800 rounded-xl">
         <div className="px-4 pt-4 flex justify-between items-center">
           <h2 className="text-xl text-white font-semibold">Who to follow</h2>
-          <Button
-            secondary
-            label="See all"
-            classNames="w-fit h-[30px] p-0 px-3 text-sm"
-          />
+          <Link href="/explore">
+            <Button
+              secondary
+              label="See all"
+              classNames="w-fit h-[30px] p-0 px-3 text-sm"
+            />
+          </Link>
         </div>
 
         {isLoading ? (
